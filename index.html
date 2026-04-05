@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<title>Smart Reply</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body,#root{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#000;color:#e4e4e7;min-height:100vh;min-height:100dvh;overflow-x:hidden;
+}
+
+/* ─── Cosmic Background ─── */
+.cosmos{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 30%,#0c0a1a 0%,#050510 40%,#000 100%)}
+.cosmos::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 25%,rgba(30,27,75,0.3) 0%,transparent 55%),
+  radial-gradient(ellipse at 75% 55%,rgba(49,10,81,0.2) 0%,transparent 45%)}
+.star{position:absolute;border-radius:50%;animation:twinkle var(--d) ease-in-out var(--del) infinite}
+.orb{position:absolute;border-radius:50%;transform:translate(-50%,-50%);
+  animation:drift 22s ease-in-out var(--del) infinite alternate, pulse 7s ease-in-out var(--del) infinite}
+.constellation-line{stroke:rgba(165,180,252,0.35);stroke-width:0.5;opacity:0.08}
+.constellation-dot{fill:rgba(165,180,252,0.25);opacity:0.1}
+.particle{position:absolute;border-radius:50%;background:rgba(165,180,252,0.6)}
+.shooting-star{position:absolute;height:1.5px;border-radius:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,0.7),transparent);
+  animation:shoot 0.8s ease-out forwards;pointer-events:none}
+
+/* ─── App Chrome ─── */
+.app{position:relative;z-index:10;min-height:100vh;min-height:100dvh}
+.header{position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,0.04);
+  background:rgba(5,5,16,0.75);backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);
+  padding:max(env(safe-area-inset-top,12px),12px) 20px 14px}
+.header h1{font-size:22px;font-weight:800;letter-spacing:-0.3px;
+  background:linear-gradient(135deg,#60a5fa 0%,#a78bfa 40%,#818cf8 70%,#60a5fa 100%);
+  background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:gradientShift 6s ease infinite}
+.header-top{display:flex;justify-content:space-between;align-items:center}
+.header-sub{font-size:12px;color:rgba(129,140,248,0.35);font-weight:600}
+.pbar-track{height:2px;background:rgba(255,255,255,0.04);border-radius:2px;margin-top:12px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#6366f1,#a78bfa);transition:width .5s ease}
+
+/* ─── Cards ─── */
+.content{padding:24px 20px 20px;padding-bottom:max(env(safe-area-inset-bottom,20px),20px)}
+.card{animation:fadeUp .35s ease}
+.contact{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 4px 16px rgba(0,0,0,0.4)}
+.av-blue{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
+.av-green{background:linear-gradient(135deg,#10b981,#047857)}
+.av-purple{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}
+.av-amber{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.av-rose{background:linear-gradient(135deg,#f43f5e,#e11d48)}
+.cname{font-size:17px;font-weight:700;color:#fafafa;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ctime{font-size:12px;color:#52525b;margin-top:3px;font-weight:500}
+.urg{display:inline-flex;font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;
+  background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2);
+  animation:pulse 2s ease-in-out infinite}
+
+.bubble{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);
+  border-radius:20px 20px 20px 6px;padding:14px 18px;margin-bottom:28px;max-width:88%;
+  font-size:15px;line-height:1.55;color:#a1a1aa;border:1px solid rgba(255,255,255,0.05)}
+
+.section-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:rgba(129,140,248,0.3);margin-bottom:14px}
+
+/* ─── Reply Cards ─── */
+.opts{display:flex;flex-direction:column;gap:10px}
+.rc{background:rgba(255,255,255,0.025);backdrop-filter:blur(12px);
+  border:2px solid rgba(255,255,255,0.04);border-radius:16px;padding:16px 18px;
+  cursor:pointer;transition:all .25s ease;position:relative;overflow:hidden;
+  -webkit-user-select:none;user-select:none}
+.rc:active{transform:scale(0.985)}
+
+.rc.sel-quick{border-color:rgba(16,185,129,0.6);background:linear-gradient(135deg,rgba(16,185,129,0.08),transparent)}
+.rc.sel-quick .rl{color:#10b981}
+.rc.sel-standard{border-color:rgba(59,130,246,0.6);background:linear-gradient(135deg,rgba(59,130,246,0.08),transparent)}
+.rc.sel-standard .rl{color:#3b82f6}
+.rc.sel-detailed{border-color:rgba(139,92,246,0.6);background:linear-gradient(135deg,rgba(139,92,246,0.08),transparent)}
+.rc.sel-detailed .rl{color:#a78bfa}
+.rc.sel-edit{border-color:rgba(245,158,11,0.6);background:linear-gradient(135deg,rgba(245,158,11,0.08),transparent)}
+.rc.sel-edit .rl{color:#f59e0b}
+
+.rl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.rl-quick{color:#34d399}.rl-standard{color:#60a5fa}.rl-detailed{color:#c4b5fd}.rl-edit{color:#fbbf24}
+.rt{font-size:15px;line-height:1.55;color:#d4d4d8}
+
+.chk{position:absolute;top:14px;right:14px;width:22px;height:22px;border-radius:50%;
+  display:none;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;
+  animation:popIn .25s cubic-bezier(0.175,0.885,0.32,1.275)}
+.rc[class*="sel-"] .chk{display:flex}
+.sel-quick .chk{background:#10b981}.sel-standard .chk{background:#3b82f6}
+.sel-detailed .chk{background:#a78bfa}.sel-edit .chk{background:#f59e0b}
+
+.ea{display:none;width:100%;min-height:90px;margin-top:10px;
+  background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:12px;
+  padding:14px;font-size:15px;line-height:1.55;color:#e4e4e7;font-family:inherit;resize:none;outline:none;
+  -webkit-user-select:text;user-select:text}
+.ea:focus{border-color:rgba(245,158,11,0.5);box-shadow:0 0 0 3px rgba(245,158,11,0.08)}
+.rc.sel-edit .ea{display:block}
+
+/* ─── Buttons ─── */
+.send{display:none;width:100%;padding:17px;margin-top:20px;border:none;border-radius:16px;color:#fff;
+  font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.2px;
+  background:linear-gradient(135deg,rgba(59,130,246,0.9),rgba(99,102,241,0.9));
+  box-shadow:0 4px 24px rgba(79,70,229,0.35),0 0 60px rgba(99,102,241,0.08);
+  backdrop-filter:blur(8px);transition:all .2s;animation:slideUp .3s ease}
+.send:active{transform:scale(0.97)}
+.send.vis{display:block}
+
+.nav-bar{display:flex;justify-content:center;gap:6px;padding:16px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;
+  transition:all .35s ease;cursor:pointer}
+.dot.on{background:#6366f1;width:28px;border-radius:4px;box-shadow:0 0 12px rgba(99,102,241,0.25)}
+.dot.ok{background:#10b981;box-shadow:0 0 8px rgba(16,185,129,0.15)}
+
+.nav-btns{display:flex;gap:12px;padding:0 20px 24px}
+.nbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:12px 20px;border-radius:12px;backdrop-filter:blur(12px);
+  background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.05);
+  color:rgba(129,140,248,0.4);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;
+  transition:all .2s}
+.nbtn:active{transform:scale(0.97)}
+.nbtn:disabled{opacity:0.2;pointer-events:none}
+
+/* ─── Sent & Empty States ─── */
+.sent-card{text-align:center;padding:60px 20px;animation:fadeUp .4s ease}
+.sent-circle{width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,#10b981,#047857);
+  display:inline-flex;align-items:center;justify-content:center;font-size:32px;color:#fff;
+  margin-bottom:16px;box-shadow:0 8px 30px rgba(16,185,129,0.2);
+  animation:popIn .5s cubic-bezier(0.175,0.885,0.32,1.275)}
+.sent-name{font-size:18px;font-weight:700;color:#fafafa}
+.sent-sub{font-size:14px;color:#52525b;margin-top:6px}
+
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;padding:0 32px;text-align:center}
+.core-orb{position:relative;margin-bottom:32px}
+.core-glow{position:absolute;border-radius:50%;
+  background:radial-gradient(circle,rgba(99,102,241,0.15) 0%,transparent 70%);animation:pulse 4s ease-in-out infinite}
+.core{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:32px;color:#fff;position:relative;
+  background:radial-gradient(circle at 35% 35%,#818cf8 0%,#6366f1 30%,#4f46e5 60%,#3730a3 100%);
+  box-shadow:0 0 50px rgba(99,102,241,0.4),0 0 100px rgba(99,102,241,0.15);
+  animation:coreGlow 4s ease-in-out infinite,popIn .6s cubic-bezier(0.175,0.885,0.32,1.275)}
+.empty h2{font-size:24px;font-weight:800;margin-bottom:8px;
+  background:linear-gradient(135deg,#e0e7ff,#a5b4fc,#818cf8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.empty p{font-size:14px;color:#71717a;line-height:1.6;max-width:280px}
+.last-checked{backdrop-filter:blur(12px);background:rgba(255,255,255,0.025);
+  border-radius:12px;border:1px solid rgba(255,255,255,0.05);padding:12px 24px;margin-top:32px}
+.last-checked .lbl{font-size:10px;color:rgba(129,140,248,0.3);font-weight:600;
+  text-transform:uppercase;letter-spacing:1px}
+.last-checked .val{font-size:14px;color:#d4d4d8;font-weight:600;margin-top:2px}
+
+.signature{text-align:center;padding:16px 0 32px}
+.sig-line{display:inline-block;width:40px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(99,102,241,0.25),transparent)}
+.sig-text{font-size:10px;margin-top:10px;font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;color:rgba(99,102,241,0.15)}
+
+/* ─── Animations ─── */
+@keyframes twinkle{0%,100%{opacity:0.2}50%{opacity:1}}
+@keyframes drift{0%{transform:translate(-50%,-50%) translate(0,0)}100%{transform:translate(-50%,-50%) translate(25px,-18px)}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.06);opacity:1}}
+@keyframes popIn{0%{transform:scale(0)}100%{transform:scale(1)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shoot{0%{opacity:1;transform:rotate(25deg) translateX(0)}100%{opacity:0;transform:rotate(25deg) translateX(180px)}}
+@keyframes coreGlow{0%,100%{box-shadow:0 0 50px rgba(99,102,241,0.4),0 0 100px rgba(99,102,241,0.15)}50%{box-shadow:0 0 70px rgba(99,102,241,0.6),0 0 140px rgba(99,102,241,0.25)}}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+</style>
+</head>
+<body>
+
+<!-- Cosmic Background -->
+<div class="cosmos" id="cosmos"></div>
+
+<!-- App -->
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <h1>Smart Reply</h1>
+      <div class="header-sub" id="counter">Inbox clear</div>
+    </div>
+    <div class="pbar-track"><div class="pbar-fill" id="pbar" style="width:0%"></div></div>
+  </div>
+  <div class="content" id="content"></div>
+  <div class="signature"><div class="sig-line"></div><div class="sig-text">Built for Terelle</div></div>
+</div>
+
+<script>
+// ═════════════════════════════════════════════
+// CONVERSATIONS DATA — updated by Smart Reply skill
+// ═════════════════════════════════════════════
+var CONVERSATIONS = [{"id": 1, "name": "Contact (913)", "initials": "CK", "color": "blue", "time": "Apr 2, 2:38 PM", "urgent": false, "message": "Yeah I thought the same! Sounds good though, keep me posted.", "replies": [{"type": "quick", "label": "Quick", "text": "Still on it, will update you soon"}, {"type": "standard", "label": "Standard", "text": "Hey, just talked to Brad. We're looking into it — I'll keep you posted once we figure out what's going on with that Advent Health bill."}, {"type": "detailed", "label": "Detailed", "text": "Appreciate the patience. Brad and I are tracking this down — we're not sure why it's still showing up since we thought it was handled. I'll circle back with you as soon as we get clarity, shouldn't be much longer."}, {"type": "edit", "label": "Edit Custom", "text": null, "editable": true, "prefill": "Hey, still checking on that Advent Health thing with Brad..."}]}, {"id": 2, "name": "Contact (470)", "initials": "BR", "color": "green", "time": "Apr 2, 5:20 PM", "urgent": true, "message": "Text me when you get off brother", "replies": [{"type": "quick", "label": "Quick", "text": "Will do bro"}, {"type": "standard", "label": "Standard", "text": "For sure, I'll hit you up when I'm off. What's going on?"}, {"type": "detailed", "label": "Detailed", "text": "Bet, I'll text you as soon as I'm done. Been a busy one today — looking forward to catching up. What's up?"}, {"type": "edit", "label": "Edit Custom", "text": null, "editable": true, "prefill": "Hey, just got off..."}]}, {"id": 3, "name": "Contact (417)", "initials": "FL", "color": "purple", "time": "Apr 2, 1:25 PM", "urgent": false, "message": "Flatlands@MC2026!", "replies": [{"type": "quick", "label": "Quick", "text": "Got it, thanks!"}, {"type": "standard", "label": "Standard", "text": "Got it! Let me know if you run into any issues getting in."}, {"type": "detailed", "label": "Detailed", "text": "Perfect, got the info. If you have any trouble accessing the Command Center just let me know and I'll get you sorted."}, {"type": "edit", "label": "Edit Custom", "text": null, "editable": true, "prefill": "Got it!"}]}];
+// Example format:
+// { id:1, name:"Brad Neuhaus", initials:"BN", color:"blue", time:"Today, 8:45 AM", urgent:false,
+//   message:"The message they sent you",
+//   replies:[
+//     {type:"quick",label:"Quick",text:"Short reply"},
+//     {type:"standard",label:"Standard",text:"Medium reply"},
+//     {type:"detailed",label:"Detailed",text:"Longer reply"},
+//     {type:"edit",label:"Edit Custom",text:null,editable:true,prefill:"Pre-filled text"}
+//   ]}
+
+var cur = 0, sent = {}, total = CONVERSATIONS.length;
+
+// ─── Cosmic Background ───
+function buildCosmos() {
+  var c = document.getElementById('cosmos');
+  var html = '';
+  // Stars
+  for (var i = 0; i < 70; i++) {
+    var s = Math.random() * 2.5 + 0.5;
+    var b = Math.random() * 0.6 + 0.2;
+    html += '<div class="star" style="left:' + (Math.random()*100) + '%;top:' + (Math.random()*100) +
+      '%;width:' + s + 'px;height:' + s + 'px;background:radial-gradient(circle,rgba(255,255,255,' +
+      b + ') 0%,transparent 70%);--d:' + (2+Math.random()*4) + 's;--del:' + (Math.random()*5) + 's"></div>';
+  }
+  // Nebula orbs
+  var orbs = [
+    {c:'rgba(79,70,229,0.3)',s:300,x:25,y:30,d:0,b:80},
+    {c:'rgba(139,92,246,0.25)',s:250,x:70,y:40,d:3,b:70},
+    {c:'rgba(59,130,246,0.2)',s:200,x:50,y:20,d:6,b:60},
+    {c:'rgba(168,85,247,0.15)',s:260,x:80,y:70,d:2,b:65},
+    {c:'rgba(99,102,241,0.12)',s:220,x:15,y:75,d:4,b:60}
+  ];
+  for (var j = 0; j < orbs.length; j++) {
+    var o = orbs[j];
+    html += '<div class="orb" style="left:'+o.x+'%;top:'+o.y+'%;width:'+o.s+'px;height:'+o.s+
+      'px;background:radial-gradient(circle,'+o.c+' 0%,transparent 70%);filter:blur('+o.b+
+      'px);--del:'+o.d+'s"></div>';
+  }
+  // Constellation
+  var svg = '<svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none">';
+  var pts = [];
+  for (var k = 0; k < 14; k++) pts.push({x:10+Math.random()*80, y:5+Math.random()*60});
+  for (var a = 0; a < pts.length; a++) {
+    for (var b2 = a+1; b2 < pts.length; b2++) {
+      var dist = Math.hypot(pts[a].x-pts[b2].x, pts[a].y-pts[b2].y);
+      if (dist < 22) svg += '<line class="constellation-line" x1="'+pts[a].x+'%" y1="'+pts[a].y+'%" x2="'+pts[b2].x+'%" y2="'+pts[b2].y+'%"/>';
+    }
+    svg += '<circle class="constellation-dot" cx="'+pts[a].x+'%" cy="'+pts[a].y+'%" r="1.5"/>';
+  }
+  svg += '</svg>';
+  // Particles
+  for (var p = 0; p < 30; p++) {
+    var ps = Math.random()*2+0.5;
+    html += '<div class="particle" style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+
+      '%;width:'+ps+'px;height:'+ps+'px;opacity:'+(Math.random()*0.2+0.03)+
+      ';animation:drift '+(15+Math.random()*20)+'s ease-in-out '+(Math.random()*10)+'s infinite alternate"></div>';
+  }
+  c.innerHTML += html + svg;
+  // Shooting stars
+  setInterval(function(){
+    var ss = document.createElement('div');
+    ss.className = 'shooting-star';
+    ss.style.left = (Math.random()*50+10)+'%';
+    ss.style.top = (Math.random()*25+5)+'%';
+    ss.style.width = '60px';
+    ss.style.transform = 'rotate('+(20+Math.random()*25)+'deg)';
+    c.appendChild(ss);
+    setTimeout(function(){ss.remove();},1200);
+  }, 6000 + Math.random()*8000);
+}
+
+// ─── Render Functions ───
+function renderEmpty() {
+  var now = new Date().toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  return '<div class="empty">' +
+    '<div class="core-orb">' +
+      '<div class="core-glow" style="width:140px;height:140px;left:-30px;top:-30px"></div>' +
+      '<div class="core-glow" style="width:110px;height:110px;left:-15px;top:-15px;animation-delay:.5s"></div>' +
+      '<div class="core">\u2713</div>' +
+    '</div>' +
+    '<h2>All Caught Up</h2>' +
+    '<p>No conversations need a reply right now. When new messages come in, Smart Reply will generate response options for you.</p>' +
+    '<div class="last-checked"><div class="lbl">Last checked</div><div class="val">' + now + '</div></div>' +
+  '</div>';
+}
+
+function renderSent(conv) {
+  return '<div class="sent-card">' +
+    '<div class="sent-circle">\u2713</div>' +
+    '<div class="sent-name">Sent to ' + conv.name + '</div>' +
+    '<div class="sent-sub">Reply delivered</div>' +
+  '</div>';
+}
+
+function renderConv(conv, ci) {
+  var h = '<div class="card">' +
+    '<div class="contact">' +
+      '<div class="av av-' + (conv.color||'blue') + '">' + conv.initials + '</div>' +
+      '<div><div class="cname">' + conv.name +
+        (conv.urgent ? ' <span class="urg">Needs reply</span>' : '') +
+      '</div><div class="ctime">' + conv.time + '</div></div>' +
+    '</div>' +
+    '<div class="bubble">' + conv.message + '</div>' +
+    '<div class="section-lbl">Choose a reply</div>' +
+    '<div class="opts">';
+
+  for (var r = 0; r < conv.replies.length; r++) {
+    var rp = conv.replies[r];
+    h += '<div class="rc" data-conv="'+ci+'" data-type="'+rp.type+'" onclick="sel('+ci+',this,\''+rp.type+'\')">' +
+      '<div class="rl rl-'+rp.type+'">' + rp.label + '</div>';
+    if (rp.editable) {
+      h += '<div class="rt" style="color:#71717a">Tap to write your own reply</div>' +
+        '<textarea class="ea" onclick="event.stopPropagation()" placeholder="Type your reply...">' + (rp.prefill||'') + '</textarea>';
+    } else {
+      h += '<div class="rt">' + rp.text + '</div>';
+    }
+    h += '<div class="chk">\u2713</div></div>';
+  }
+
+  h += '</div><button class="send" id="send-'+ci+'" onclick="doSend('+ci+')">Send to ' +
+    conv.name.split(' ')[0] + '</button></div>';
+  return h;
+}
+
+function renderNav() {
+  if (total <= 1) return '';
+  var h = '<div class="nav-bar">';
+  for (var i = 0; i < total; i++) {
+    var cls = 'dot';
+    if (i === cur) cls += ' on';
+    if (sent[i]) cls += ' ok';
+    h += '<button class="'+cls+'" onclick="go('+i+')"></button>';
+  }
+  h += '</div><div class="nav-btns">' +
+    '<button class="nbtn" id="pb" onclick="go(cur-1)"'+(cur===0?' disabled':'')+'>← Prev</button>' +
+    '<button class="nbtn" id="nb" onclick="go(cur+1)"'+(cur===total-1?' disabled':'')+'>Next →</button>' +
+  '</div>';
+  return h;
+}
+
+function render() {
+  var el = document.getElementById('content');
+  var pending = total - Object.keys(sent).length;
+  if (total === 0 || pending === 0) {
+    el.innerHTML = renderEmpty();
+    document.getElementById('counter').textContent = total === 0 ? 'Inbox clear' : 'All done';
+    document.getElementById('pbar').style.width = '100%';
+    return;
+  }
+  var conv = CONVERSATIONS[cur];
+  if (sent[cur]) {
+    el.innerHTML = renderSent(conv) + renderNav();
+  } else {
+    el.innerHTML = renderConv(conv, cur) + renderNav();
+  }
+  document.getElementById('counter').textContent = (cur+1)+' of '+total+' \u00B7 '+pending+' pending';
+  document.getElementById('pbar').style.width = (Object.keys(sent).length/total*100)+'%';
+}
+
+// ─── Interaction ───
+function sel(ci, el, type) {
+  if (sent[ci]) return;
+  var cards = document.querySelectorAll('.rc[data-conv="'+ci+'"]');
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].className = 'rc';
+  }
+  el.className = 'rc sel-' + type;
+  document.getElementById('send-'+ci).classList.add('vis');
+  var ta = el.querySelector('.ea');
+  if (ta) setTimeout(function(){ ta.focus(); }, 50);
+  setTimeout(function(){
+    var btn = document.getElementById('send-'+ci);
+    if (btn) btn.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }, 100);
+}
+
+function doSend(ci) {
+  if (sent[ci]) return;
+  sent[ci] = true;
+  render();
+  // Auto-advance
+  setTimeout(function(){
+    for (var i = 0; i < total; i++) {
+      if (!sent[i]) { go(i); return; }
+    }
+    render(); // All done
+  }, 1200);
+}
+
+function go(i) {
+  if (i < 0 || i >= total) return;
+  cur = i;
+  render();
+  window.scrollTo(0, 0);
+}
+
+// ─── Swipe ───
+(function(){
+  var sx=0,sy=0;
+  document.addEventListener('touchstart',function(e){
+    if(e.target.tagName==='TEXTAREA')return;
+    sx=e.touches[0].clientX;sy=e.touches[0].clientY;
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(e.target.tagName==='TEXTAREA')return;
+    var dx=e.changedTouches[0].clientX-sx;
+    var dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
+      if(dx<0)go(cur+1);else go(cur-1);
+    }
+  },{passive:true});
+})();
+
+// ─── Keyboard ───
+document.addEventListener('keydown',function(e){
+  if(e.target.tagName==='TEXTAREA')return;
+  if(e.key==='ArrowRight')go(cur+1);
+  if(e.key==='ArrowLeft')go(cur-1);
+});
+
+// ─── PWA Registration ───
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(function(){});
+}
+
+// ─── Init ───
+buildCosmos();
+render();
+</script>
+</body>
+</html>
