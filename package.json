@@ -1,0 +1,10 @@
+{
+  "name": "smart-reply",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered message reply assistant for Terelle",
+  "scripts": {
+    "dev": "npx serve public -p 3000",
+    "start": "npx serve public"
+  }
+}
