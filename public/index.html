@@ -167,6 +167,96 @@ html,body,#root{
 .sig-text{font-size:10px;margin-top:10px;font-weight:600;letter-spacing:2px;
   text-transform:uppercase;color:rgba(99,102,241,0.15)}
 
+/* ─── Toast ─── */
+.toast{position:fixed;left:50%;bottom:max(env(safe-area-inset-bottom,24px),24px);
+  transform:translate(-50%,40px);z-index:200;
+  background:rgba(20,20,30,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 18px;
+  font-size:14px;font-weight:600;color:#e4e4e7;opacity:0;pointer-events:none;
+  transition:transform .25s ease,opacity .25s ease;max-width:88vw;text-align:center}
+.toast.vis{transform:translate(-50%,0);opacity:1}
+.toast.ok{border-color:rgba(16,185,129,0.4);color:#a7f3d0}
+.toast.err{border-color:rgba(239,68,68,0.4);color:#fca5a5}
+
+/* ─── Undo Bar ─── */
+.undo{position:fixed;left:50%;bottom:max(env(safe-area-inset-bottom,24px),24px);
+  transform:translate(-50%,60px);z-index:210;
+  background:rgba(20,20,30,0.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px 12px 10px 16px;
+  display:none;align-items:center;gap:14px;font-size:14px;color:#e4e4e7;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);transition:transform .25s ease}
+.undo.vis{display:flex;transform:translate(-50%,0)}
+.undo-msg{font-weight:500;color:#d4d4d8}
+.undo-btn{background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.4);
+  color:#a5b4fc;padding:7px 14px;border-radius:10px;font-weight:700;font-size:13px;
+  cursor:pointer;font-family:inherit;min-height:36px}
+.undo-btn:active{transform:scale(.96)}
+.undo-ring{width:22px;height:22px;border-radius:50%;
+  background:conic-gradient(#6366f1 var(--p,0%),rgba(255,255,255,0.08) 0);
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#a5b4fc}
+.undo-ring::after{content:'';width:14px;height:14px;border-radius:50%;background:rgba(20,20,30,0.95);position:absolute}
+.undo-ring span{position:relative;z-index:1}
+
+/* ─── Search ─── */
+.search-wrap{position:relative;margin-top:12px}
+.search{width:100%;padding:10px 14px 10px 36px;border-radius:12px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+  color:#e4e4e7;font-size:14px;font-family:inherit;outline:none;min-height:42px;
+  -webkit-appearance:none}
+.search:focus{border-color:rgba(99,102,241,0.45);background:rgba(255,255,255,0.06)}
+.search::placeholder{color:#52525b}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  color:#52525b;font-size:14px;pointer-events:none}
+
+/* ─── Skip / Action Row ─── */
+.action-row{display:flex;gap:10px;margin-top:14px}
+.skip-btn{flex:1;padding:13px;border-radius:12px;background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.05);color:#a1a1aa;font-size:14px;font-weight:600;
+  font-family:inherit;cursor:pointer;min-height:44px;transition:all .2s}
+.skip-btn:active{transform:scale(.97)}
+
+/* ─── Char Counter / Length Badge ─── */
+.char-count{font-size:11px;color:#52525b;margin-top:6px;text-align:right;font-variant-numeric:tabular-nums}
+.char-count.warn{color:#fbbf24}
+.char-count.over{color:#f87171}
+.len-badge{display:inline-block;font-size:10px;font-weight:600;color:#52525b;
+  margin-left:6px;padding:1px 6px;border-radius:8px;background:rgba(255,255,255,0.04);
+  font-variant-numeric:tabular-nums}
+
+/* ─── Online / Offline Dot ─── */
+.online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:#10b981;margin-right:6px;box-shadow:0 0 8px rgba(16,185,129,0.5);vertical-align:middle}
+.online-dot.off{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,0.5)}
+
+/* ─── Update Prompt ─── */
+.update-prompt{position:fixed;top:max(env(safe-area-inset-top,12px),12px);
+  left:50%;transform:translate(-50%,-80px);z-index:220;
+  background:rgba(20,20,30,0.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(99,102,241,0.4);border-radius:12px;padding:10px 16px;
+  display:none;align-items:center;gap:12px;font-size:13px;color:#e0e7ff;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);transition:transform .3s ease}
+.update-prompt.vis{display:flex;transform:translate(-50%,0)}
+.update-prompt button{background:rgba(99,102,241,0.25);border:none;color:#fff;
+  padding:6px 12px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;
+  font-family:inherit;min-height:32px}
+
+/* ─── Pull-to-refresh hint ─── */
+.ptr{position:fixed;top:0;left:0;right:0;display:flex;justify-content:center;
+  pointer-events:none;z-index:40;transform:translateY(-100%);transition:transform .2s ease}
+.ptr.vis{transform:translateY(0)}
+.ptr-inner{margin-top:8px;padding:6px 14px;border-radius:100px;
+  background:rgba(20,20,30,0.85);backdrop-filter:blur(12px);
+  font-size:12px;color:#a5b4fc;font-weight:600;border:1px solid rgba(99,102,241,0.3)}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;scroll-behavior:auto !important}
+  .star,.shooting-star,.particle,.orb{animation:none !important;display:none}
+  .header h1{animation:none;background:linear-gradient(135deg,#a78bfa,#60a5fa);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+}
+
 /* ─── Animations ─── */
 @keyframes twinkle{0%,100%{opacity:0.2}50%{opacity:1}}
 @keyframes drift{0%{transform:translate(-50%,-50%) translate(0,0)}100%{transform:translate(-50%,-50%) translate(25px,-18px)}}
@@ -189,12 +279,28 @@ html,body,#root{
   <div class="header">
     <div class="header-top">
       <h1>Smart Reply</h1>
-      <div class="header-sub" id="counter">Inbox clear</div>
+      <div class="header-sub" id="counter"><span class="online-dot" id="netDot" aria-hidden="true"></span><span id="counterText">Inbox clear</span></div>
     </div>
-    <div class="pbar-track"><div class="pbar-fill" id="pbar" style="width:0%"></div></div>
+    <div class="pbar-track"><div class="pbar-fill" id="pbar" style="width:0%" role="progressbar" aria-label="Reply progress"></div></div>
+    <div class="search-wrap" id="searchWrap" style="display:none">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <input class="search" id="search" type="search" inputmode="search" placeholder="Search conversations" aria-label="Search conversations" autocomplete="off">
+    </div>
   </div>
-  <div class="content" id="content"></div>
+  <div class="ptr" id="ptr" aria-hidden="true"><div class="ptr-inner">↻ Release to refresh</div></div>
+  <div class="content" id="content" role="main"></div>
   <div class="signature"><div class="sig-line"></div><div class="sig-text">Built for Terelle</div></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="undo" id="undo" role="alert" aria-live="assertive">
+  <div class="undo-ring"><span id="undoSec">5</span></div>
+  <div class="undo-msg" id="undoMsg">Sent</div>
+  <button class="undo-btn" id="undoBtn" type="button">Undo</button>
+</div>
+<div class="update-prompt" id="updatePrompt" role="alert">
+  <span>New version available</span>
+  <button id="updateBtn" type="button">Reload</button>
 </div>
 
 <script>
@@ -212,11 +318,76 @@ var CONVERSATIONS = [{"id": 1, "name": "Contact (913)", "initials": "CK", "color
 //     {type:"edit",label:"Edit Custom",text:null,editable:true,prefill:"Pre-filled text"}
 //   ]}
 
-var cur = 0, sent = {}, total = CONVERSATIONS.length;
+// ─── Persistence Layer (features 1-3) ───
+var STORE_KEY = 'smartReply.v1';
+var dataHash = (function(){
+  // Hash of conversations so persistence resets when skill pushes new data
+  try {
+    var s = '';
+    for (var i = 0; i < CONVERSATIONS.length; i++) s += CONVERSATIONS[i].id + ':' + CONVERSATIONS[i].time + '|';
+    var h = 0;
+    for (var k = 0; k < s.length; k++) { h = ((h<<5)-h) + s.charCodeAt(k); h |= 0; }
+    return String(h);
+  } catch(e){ return '0'; }
+})();
+function loadStore(){
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return {sent:{},drafts:{},skip:{},lastChecked:Date.now(),hash:dataHash};
+    var p = JSON.parse(raw);
+    if (p.hash !== dataHash) return {sent:{},drafts:{},skip:{},lastChecked:Date.now(),hash:dataHash};
+    p.sent = p.sent || {}; p.drafts = p.drafts || {}; p.skip = p.skip || {};
+    return p;
+  } catch(e){ return {sent:{},drafts:{},skip:{},lastChecked:Date.now(),hash:dataHash}; }
+}
+function saveStore(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch(e){}
+}
+var store = loadStore();
+var sent = store.sent, drafts = store.drafts, skip = store.skip;
+var cur = 0, total = CONVERSATIONS.length;
+var filter = '', visibleIdx = [];
+var undoTimer = null, undoCountdown = null, lastSent = null;
+
+// ─── Helpers ───
+function relTime(t){
+  if (!t) return 'Never';
+  var diff = Math.floor((Date.now() - t) / 1000);
+  if (diff < 60) return 'Just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+function esc(s){ return String(s||'').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function buzz(ms){ try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){} }
+function showToast(msg, kind){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast vis' + (kind ? ' ' + kind : '');
+  clearTimeout(t._h);
+  t._h = setTimeout(function(){ t.className = 'toast' + (kind ? ' ' + kind : ''); }, 2200);
+}
+function activeIdx(){
+  // ordered list of conversations matching the current filter & not-skipped
+  var arr = [];
+  var f = filter.trim().toLowerCase();
+  for (var i = 0; i < total; i++) {
+    if (skip[i]) continue;
+    if (f) {
+      var c = CONVERSATIONS[i];
+      var hay = (c.name + ' ' + c.message + ' ' + (c.initials||'')).toLowerCase();
+      if (hay.indexOf(f) === -1) continue;
+    }
+    arr.push(i);
+  }
+  return arr;
+}
 
 // ─── Cosmic Background ───
+var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function buildCosmos() {
   var c = document.getElementById('cosmos');
+  if (REDUCED) return; // honor user preference
   var html = '';
   // Stars
   for (var i = 0; i < 70; i++) {
@@ -275,7 +446,9 @@ function buildCosmos() {
 
 // ─── Render Functions ───
 function renderEmpty() {
-  var now = new Date().toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  var lc = store.lastChecked || Date.now();
+  var rel = relTime(lc);
+  var abs = new Date(lc).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
   return '<div class="empty">' +
     '<div class="core-orb">' +
       '<div class="core-glow" style="width:140px;height:140px;left:-30px;top:-30px"></div>' +
@@ -284,7 +457,7 @@ function renderEmpty() {
     '</div>' +
     '<h2>All Caught Up</h2>' +
     '<p>No conversations need a reply right now. When new messages come in, Smart Reply will generate response options for you.</p>' +
-    '<div class="last-checked"><div class="lbl">Last checked</div><div class="val">' + now + '</div></div>' +
+    '<div class="last-checked"><div class="lbl">Last checked</div><div class="val" title="'+esc(abs)+'">'+esc(rel)+'</div></div>' +
   '</div>';
 }
 
@@ -297,68 +470,155 @@ function renderSent(conv) {
 }
 
 function renderConv(conv, ci) {
-  var h = '<div class="card">' +
+  var first = (conv.name||'').split(' ')[0] || 'them';
+  var h = '<div class="card" role="region" aria-label="Conversation with '+esc(conv.name)+'">' +
     '<div class="contact">' +
-      '<div class="av av-' + (conv.color||'blue') + '">' + conv.initials + '</div>' +
-      '<div><div class="cname">' + conv.name +
-        (conv.urgent ? ' <span class="urg">Needs reply</span>' : '') +
-      '</div><div class="ctime">' + conv.time + '</div></div>' +
+      '<div class="av av-' + esc(conv.color||'blue') + '" aria-hidden="true">' + esc(conv.initials) + '</div>' +
+      '<div><div class="cname">' + esc(conv.name) +
+        (conv.urgent ? ' <span class="urg" role="status">Needs reply</span>' : '') +
+      '</div><div class="ctime">' + esc(conv.time) + '</div></div>' +
     '</div>' +
-    '<div class="bubble">' + conv.message + '</div>' +
-    '<div class="section-lbl">Choose a reply</div>' +
-    '<div class="opts">';
+    '<div class="bubble" aria-label="Their message">' + esc(conv.message) + '</div>' +
+    '<div class="section-lbl" id="opts-lbl-'+ci+'">Choose a reply</div>' +
+    '<div class="opts" role="radiogroup" aria-labelledby="opts-lbl-'+ci+'">';
 
+  var savedDraft = drafts[conv.id];
   for (var r = 0; r < conv.replies.length; r++) {
     var rp = conv.replies[r];
-    h += '<div class="rc" data-conv="'+ci+'" data-type="'+rp.type+'" onclick="sel('+ci+',this,\''+rp.type+'\')">' +
-      '<div class="rl rl-'+rp.type+'">' + rp.label + '</div>';
+    var len = rp.editable ? 0 : (rp.text||'').length;
+    var lenBadge = rp.editable ? '' : '<span class="len-badge" aria-label="'+len+' characters">'+len+'</span>';
+    h += '<div class="rc" data-conv="'+ci+'" data-type="'+esc(rp.type)+'" data-idx="'+r+'" ' +
+      'role="radio" aria-checked="false" tabindex="0" ' +
+      'onclick="sel('+ci+',this,\''+esc(rp.type)+'\')" ' +
+      'onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();sel('+ci+',this,\''+esc(rp.type)+'\')}">' +
+      '<div class="rl rl-'+esc(rp.type)+'">' + esc(rp.label) + lenBadge + '</div>';
     if (rp.editable) {
+      var initial = savedDraft != null ? savedDraft : (rp.prefill||'');
       h += '<div class="rt" style="color:#71717a">Tap to write your own reply</div>' +
-        '<textarea class="ea" onclick="event.stopPropagation()" placeholder="Type your reply...">' + (rp.prefill||'') + '</textarea>';
+        '<textarea class="ea" id="ea-'+ci+'" maxlength="1500" rows="3" ' +
+        'aria-label="Write a custom reply" ' +
+        'onclick="event.stopPropagation()" ' +
+        'oninput="onDraftInput('+ci+',this)" ' +
+        'placeholder="Type your reply...">' + esc(initial) + '</textarea>' +
+        '<div class="char-count" id="cc-'+ci+'">'+initial.length+' / 1500</div>';
     } else {
-      h += '<div class="rt">' + rp.text + '</div>';
+      h += '<div class="rt">' + esc(rp.text) + '</div>';
     }
-    h += '<div class="chk">\u2713</div></div>';
+    h += '<div class="chk" aria-hidden="true">\u2713</div></div>';
   }
 
-  h += '</div><button class="send" id="send-'+ci+'" onclick="doSend('+ci+')">Send to ' +
-    conv.name.split(' ')[0] + '</button></div>';
-  return h;
-}
-
-function renderNav() {
-  if (total <= 1) return '';
-  var h = '<div class="nav-bar">';
-  for (var i = 0; i < total; i++) {
-    var cls = 'dot';
-    if (i === cur) cls += ' on';
-    if (sent[i]) cls += ' ok';
-    h += '<button class="'+cls+'" onclick="go('+i+')"></button>';
-  }
-  h += '</div><div class="nav-btns">' +
-    '<button class="nbtn" id="pb" onclick="go(cur-1)"'+(cur===0?' disabled':'')+'>← Prev</button>' +
-    '<button class="nbtn" id="nb" onclick="go(cur+1)"'+(cur===total-1?' disabled':'')+'>Next →</button>' +
+  h += '</div>' +
+    '<button class="send" id="send-'+ci+'" type="button" aria-label="Send reply to '+esc(conv.name)+'" onclick="doSend('+ci+')">Send to ' + esc(first) + '</button>' +
+    '<div class="action-row">' +
+      '<button class="skip-btn" type="button" aria-label="Skip this conversation" onclick="doSkip('+ci+')">⏭ Skip for now</button>' +
+    '</div>' +
   '</div>';
   return h;
 }
 
+function renderNav() {
+  if (visibleIdx.length <= 1) return '';
+  var pos = visibleIdx.indexOf(cur);
+  var h = '<div class="nav-bar" role="tablist" aria-label="Conversation navigation">';
+  for (var n = 0; n < visibleIdx.length; n++) {
+    var i = visibleIdx[n];
+    var cls = 'dot';
+    if (i === cur) cls += ' on';
+    if (sent[i]) cls += ' ok';
+    h += '<button class="'+cls+'" type="button" role="tab" aria-selected="'+(i===cur)+'" aria-label="Conversation '+(n+1)+'" onclick="go('+i+')"></button>';
+  }
+  var prev = pos > 0 ? visibleIdx[pos-1] : -1;
+  var next = pos < visibleIdx.length-1 ? visibleIdx[pos+1] : -1;
+  h += '</div><div class="nav-btns">' +
+    '<button class="nbtn" id="pb" type="button" onclick="go('+prev+')"'+(prev<0?' disabled':'')+'>← Prev</button>' +
+    '<button class="nbtn" id="nb" type="button" onclick="go('+next+')"'+(next<0?' disabled':'')+'>Next →</button>' +
+  '</div>';
+  return h;
+}
+
+function updateBadge(pending){
+  // Feature 24: PWA app badge
+  try {
+    if ('setAppBadge' in navigator) {
+      if (pending > 0) navigator.setAppBadge(pending);
+      else navigator.clearAppBadge && navigator.clearAppBadge();
+    }
+  } catch(e){}
+  // Feature 13: title with pending count
+  document.title = pending > 0 ? '('+pending+') Smart Reply' : 'Smart Reply';
+}
+
 function render() {
+  visibleIdx = activeIdx().filter(function(i){ return !sent[i]; });
+  // include current even if sent (so we can show the sent card briefly)
+  if (sent[cur] && visibleIdx.indexOf(cur) === -1 && !skip[cur]) {
+    var ord = activeIdx();
+    if (ord.indexOf(cur) !== -1) visibleIdx = ord; // show sent card in flow
+  }
+  // Show search bar once you have more than 3 conversations
+  document.getElementById('searchWrap').style.display = total > 3 ? 'block' : 'none';
+
   var el = document.getElementById('content');
-  var pending = total - Object.keys(sent).length;
-  if (total === 0 || pending === 0) {
+  var ordered = activeIdx();
+  var pending = 0;
+  for (var p = 0; p < ordered.length; p++) if (!sent[ordered[p]]) pending++;
+  var counterText = document.getElementById('counterText');
+
+  if (total === 0) {
     el.innerHTML = renderEmpty();
-    document.getElementById('counter').textContent = total === 0 ? 'Inbox clear' : 'All done';
-    document.getElementById('pbar').style.width = '100%';
+    counterText.textContent = 'Inbox clear';
+    setBar(100);
+    updateBadge(0);
     return;
   }
+  if (ordered.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="core-orb"><div class="core-glow" style="width:140px;height:140px;left:-30px;top:-30px"></div><div class="core">⌕</div></div><h2>No matches</h2><p>No conversations match \u201C'+esc(filter)+'\u201D. <a href="#" onclick="clearFilter();return false" style="color:#a5b4fc">Clear search</a></p></div>';
+    counterText.textContent = '0 of '+total;
+    setBar(0);
+    updateBadge(pending);
+    return;
+  }
+  if (pending === 0) {
+    el.innerHTML = renderEmpty();
+    counterText.textContent = 'All done';
+    setBar(100);
+    updateBadge(0);
+    return;
+  }
+
+  if (ordered.indexOf(cur) === -1 || sent[cur]) {
+    // jump to first pending in current filter
+    for (var q = 0; q < ordered.length; q++) {
+      if (!sent[ordered[q]]) { cur = ordered[q]; break; }
+    }
+  }
   var conv = CONVERSATIONS[cur];
+  visibleIdx = ordered;
   if (sent[cur]) {
     el.innerHTML = renderSent(conv) + renderNav();
   } else {
     el.innerHTML = renderConv(conv, cur) + renderNav();
+    // Feature 13: focus first reply card so keyboard users can act immediately
+    var firstCard = el.querySelector('.rc');
+    if (firstCard && document.activeElement === document.body) firstCard.focus({preventScroll:true});
   }
-  document.getElementById('counter').textContent = (cur+1)+' of '+total+' \u00B7 '+pending+' pending';
-  document.getElementById('pbar').style.width = (Object.keys(sent).length/total*100)+'%';
+  var posIdx = ordered.indexOf(cur);
+  counterText.textContent = (posIdx+1)+' of '+ordered.length+' \u00B7 '+pending+' pending';
+  setBar(((ordered.length-pending)/ordered.length)*100);
+  updateBadge(pending);
+}
+
+function setBar(pct){
+  var b = document.getElementById('pbar');
+  b.style.width = pct + '%';
+  b.setAttribute('aria-valuenow', Math.round(pct));
+}
+
+function clearFilter(){
+  filter = '';
+  var s = document.getElementById('search');
+  if (s) s.value = '';
+  render();
 }
 
 // ─── Interaction ───
@@ -367,28 +627,186 @@ function sel(ci, el, type) {
   var cards = document.querySelectorAll('.rc[data-conv="'+ci+'"]');
   for (var i = 0; i < cards.length; i++) {
     cards[i].className = 'rc';
+    cards[i].setAttribute('aria-checked', 'false');
   }
   el.className = 'rc sel-' + type;
+  el.setAttribute('aria-checked', 'true');
   document.getElementById('send-'+ci).classList.add('vis');
+  buzz(8);
   var ta = el.querySelector('.ea');
-  if (ta) setTimeout(function(){ ta.focus(); }, 50);
+  if (ta) {
+    autoResize(ta);
+    setTimeout(function(){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 50);
+  }
   setTimeout(function(){
     var btn = document.getElementById('send-'+ci);
-    if (btn) btn.scrollIntoView({behavior:'smooth',block:'nearest'});
+    if (btn) btn.scrollIntoView({behavior:REDUCED?'auto':'smooth',block:'nearest'});
   }, 100);
+}
+
+function getSelectedReply(ci){
+  var card = document.querySelector('.rc[data-conv="'+ci+'"][class*="sel-"]');
+  if (!card) return null;
+  var idx = parseInt(card.getAttribute('data-idx'),10);
+  var rp = CONVERSATIONS[ci].replies[idx];
+  if (rp.editable) {
+    var ta = card.querySelector('.ea');
+    return { type: rp.type, text: ta ? ta.value : '' };
+  }
+  return { type: rp.type, text: rp.text };
+}
+
+function onDraftInput(ci, ta){
+  // Features 16, 17, 2: char counter, auto-resize, draft persistence
+  var conv = CONVERSATIONS[ci];
+  drafts[conv.id] = ta.value;
+  store.drafts = drafts; saveStore();
+  var cc = document.getElementById('cc-'+ci);
+  if (cc) {
+    var n = ta.value.length;
+    cc.textContent = n + ' / 1500';
+    cc.className = 'char-count' + (n > 1400 ? ' warn' : '') + (n >= 1500 ? ' over' : '');
+  }
+  autoResize(ta);
+}
+
+function autoResize(ta){
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(ta.scrollHeight, 240) + 'px';
 }
 
 function doSend(ci) {
   if (sent[ci]) return;
+  var picked = getSelectedReply(ci);
+  if (!picked) { showToast('Pick a reply first','err'); return; }
+  if (!picked.text || !picked.text.trim()) {
+    // Feature 10: empty-edit guard
+    showToast('Reply is empty','err');
+    buzz([20,40,20]);
+    return;
+  }
+
+  // Features 4-7: copy + sms: + share
+  var conv = CONVERSATIONS[ci];
+  copyToClipboard(picked.text);
+  triggerNativeSend(conv, picked.text);
+
   sent[ci] = true;
+  store.sent = sent; store.lastChecked = Date.now(); saveStore();
+  lastSent = { ci: ci, text: picked.text, at: Date.now() };
+  buzz([10,30,10]);
   render();
-  // Auto-advance
-  setTimeout(function(){
-    for (var i = 0; i < total; i++) {
-      if (!sent[i]) { go(i); return; }
+  showUndo('Sent to ' + (conv.name.split(' ')[0] || 'them'));
+
+  // Auto-advance after the undo window or when user dismisses
+  scheduleAutoAdvance();
+}
+
+function copyToClipboard(text){
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){
+        showToast('Reply copied','ok');
+      }).catch(function(){
+        legacyCopy(text);
+      });
+      return;
     }
-    render(); // All done
+  } catch(e){}
+  legacyCopy(text);
+}
+function legacyCopy(text){
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('Reply copied','ok');
+  } catch(e){ showToast('Copy failed','err'); }
+}
+
+function triggerNativeSend(conv, text){
+  // Feature 6: prefer Web Share when available
+  if (navigator.share && /Mobi|iPhone|Android/i.test(navigator.userAgent)) {
+    navigator.share({ text: text, title: 'Reply to ' + conv.name }).catch(function(){
+      openSmsLink(conv, text);
+    });
+    return;
+  }
+  openSmsLink(conv, text);
+}
+function openSmsLink(conv, text){
+  // Feature 5: sms: deep link with prefilled body
+  var phone = (conv.phone || '').replace(/[^\d+]/g, '');
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  var sep = isIOS ? '&' : '?';
+  var url = 'sms:' + (phone || '') + sep + 'body=' + encodeURIComponent(text);
+  // Use a temp anchor so iOS Safari treats it as a user-initiated nav
+  try {
+    var a = document.createElement('a');
+    a.href = url; a.style.display = 'none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ a.remove(); }, 100);
+  } catch(e){}
+}
+
+// ─── Undo Send (feature 8) ───
+function showUndo(msg){
+  var u = document.getElementById('undo');
+  document.getElementById('undoMsg').textContent = msg;
+  u.classList.add('vis');
+  var sec = 5;
+  document.getElementById('undoSec').textContent = sec;
+  u.querySelector('.undo-ring').style.setProperty('--p','0%');
+  clearInterval(undoCountdown);
+  undoCountdown = setInterval(function(){
+    sec--;
+    if (sec <= 0) { hideUndo(); return; }
+    document.getElementById('undoSec').textContent = sec;
+    u.querySelector('.undo-ring').style.setProperty('--p', ((5-sec)/5*100)+'%');
+  }, 1000);
+  clearTimeout(undoTimer);
+  undoTimer = setTimeout(hideUndo, 5000);
+}
+function hideUndo(){
+  clearTimeout(undoTimer); clearInterval(undoCountdown);
+  document.getElementById('undo').classList.remove('vis');
+}
+function undoSend(){
+  if (!lastSent) return;
+  delete sent[lastSent.ci];
+  store.sent = sent; saveStore();
+  cur = lastSent.ci;
+  lastSent = null;
+  hideUndo();
+  buzz(15);
+  showToast('Send undone');
+  render();
+}
+
+function scheduleAutoAdvance(){
+  setTimeout(function(){
+    var ord = activeIdx();
+    for (var n = 0; n < ord.length; n++) {
+      if (!sent[ord[n]]) { go(ord[n]); return; }
+    }
+    render();
   }, 1200);
+}
+
+// ─── Skip / Snooze (feature 9) ───
+function doSkip(ci){
+  skip[ci] = true;
+  store.skip = skip; saveStore();
+  buzz(8);
+  showToast('Skipped \u2014 will reappear on next refresh');
+  // Find next conversation
+  var ord = activeIdx();
+  if (ord.length === 0) { render(); return; }
+  for (var n = 0; n < ord.length; n++) {
+    if (!sent[ord[n]]) { go(ord[n]); return; }
+  }
+  render();
 }
 
 function go(i) {
@@ -398,38 +816,148 @@ function go(i) {
   window.scrollTo(0, 0);
 }
 
-// ─── Swipe ───
+// ─── Swipe + Pull-to-refresh (features 19) ───
 (function(){
-  var sx=0,sy=0;
+  var sx=0,sy=0,startScroll=0,ptrActive=false;
+  var ptr = document.getElementById('ptr');
   document.addEventListener('touchstart',function(e){
-    if(e.target.tagName==='TEXTAREA')return;
+    if(e.target.tagName==='TEXTAREA' || e.target.tagName==='INPUT') return;
     sx=e.touches[0].clientX;sy=e.touches[0].clientY;
+    startScroll = window.scrollY;
+    ptrActive = (startScroll <= 0);
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){
+    if(!ptrActive) return;
+    var dy = e.touches[0].clientY - sy;
+    if (dy > 60) ptr.classList.add('vis'); else ptr.classList.remove('vis');
   },{passive:true});
   document.addEventListener('touchend',function(e){
-    if(e.target.tagName==='TEXTAREA')return;
+    if(e.target.tagName==='TEXTAREA' || e.target.tagName==='INPUT') return;
     var dx=e.changedTouches[0].clientX-sx;
     var dy=e.changedTouches[0].clientY-sy;
-    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
-      if(dx<0)go(cur+1);else go(cur-1);
+    if (ptrActive && dy > 80 && Math.abs(dx) < 50) {
+      ptr.classList.remove('vis');
+      store.lastChecked = Date.now(); saveStore();
+      buzz(10);
+      showToast('Refreshed');
+      render();
+      return;
+    }
+    ptr.classList.remove('vis');
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5){
+      var pos = visibleIdx.indexOf(cur);
+      if (pos === -1) return;
+      var target = dx < 0 ? visibleIdx[pos+1] : visibleIdx[pos-1];
+      if (target != null) go(target);
     }
   },{passive:true});
 })();
 
-// ─── Keyboard ───
+// ─── Keyboard shortcuts (feature 11) ───
 document.addEventListener('keydown',function(e){
-  if(e.target.tagName==='TEXTAREA')return;
-  if(e.key==='ArrowRight')go(cur+1);
-  if(e.key==='ArrowLeft')go(cur-1);
+  if (e.target.tagName==='TEXTAREA' || e.target.tagName==='INPUT') return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  var pos = visibleIdx.indexOf(cur);
+  switch(e.key){
+    case 'ArrowRight':
+    case 'j':
+      if (pos !== -1 && pos < visibleIdx.length-1) go(visibleIdx[pos+1]);
+      break;
+    case 'ArrowLeft':
+    case 'k':
+      if (pos !== -1 && pos > 0) go(visibleIdx[pos-1]);
+      break;
+    case '1': case '2': case '3': case '4':
+      var ci = cur;
+      var cards = document.querySelectorAll('.rc[data-conv="'+ci+'"]');
+      var n = parseInt(e.key,10) - 1;
+      if (cards[n]) { e.preventDefault(); cards[n].click(); }
+      break;
+    case 'Enter':
+      var btn = document.getElementById('send-'+cur);
+      if (btn && btn.classList.contains('vis')) { e.preventDefault(); btn.click(); }
+      break;
+    case 'Escape':
+      var sels = document.querySelectorAll('.rc[data-conv="'+cur+'"][class*="sel-"]');
+      for (var i = 0; i < sels.length; i++) {
+        sels[i].className = 'rc';
+        sels[i].setAttribute('aria-checked','false');
+      }
+      var sb = document.getElementById('send-'+cur);
+      if (sb) sb.classList.remove('vis');
+      break;
+    case 's': case 'S':
+      doSkip(cur);
+      break;
+    case 'u': case 'U':
+      if (lastSent) undoSend();
+      break;
+    case '/':
+      var s = document.getElementById('search');
+      if (s && s.offsetParent !== null) { e.preventDefault(); s.focus(); }
+      break;
+  }
 });
 
-// ─── PWA Registration ───
+// ─── Search wiring (feature 21) ───
+(function(){
+  var s = document.getElementById('search');
+  if (!s) return;
+  var deb;
+  s.addEventListener('input', function(){
+    clearTimeout(deb);
+    deb = setTimeout(function(){
+      filter = s.value || '';
+      render();
+    }, 120);
+  });
+})();
+
+// ─── Undo button wiring ───
+document.getElementById('undoBtn').addEventListener('click', undoSend);
+
+// ─── Online / Offline indicator (feature 25) ───
+function updateOnline(){
+  var dot = document.getElementById('netDot');
+  if (!dot) return;
+  if (navigator.onLine) { dot.classList.remove('off'); dot.title = 'Online'; }
+  else { dot.classList.add('off'); dot.title = 'Offline'; showToast('You are offline','err'); }
+}
+window.addEventListener('online', updateOnline);
+window.addEventListener('offline', updateOnline);
+
+// ─── PWA Registration + Update prompt (feature 25) ───
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(function(){});
+  navigator.serviceWorker.register('/sw.js').then(function(reg){
+    if (!reg) return;
+    function trackInstall(w){
+      if (!w) return;
+      w.addEventListener('statechange', function(){
+        if (w.state === 'installed' && navigator.serviceWorker.controller) {
+          var p = document.getElementById('updatePrompt');
+          p.classList.add('vis');
+          document.getElementById('updateBtn').onclick = function(){
+            w.postMessage({type:'SKIP_WAITING'});
+          };
+        }
+      });
+    }
+    if (reg.waiting) trackInstall(reg.waiting);
+    reg.addEventListener('updatefound', function(){ trackInstall(reg.installing); });
+  }).catch(function(){});
+  navigator.serviceWorker.addEventListener('controllerchange', function(){
+    window.location.reload();
+  });
 }
 
 // ─── Init ───
 buildCosmos();
+updateOnline();
 render();
+// Refresh relative-time every 30s when on empty state
+setInterval(function(){
+  if (document.querySelector('.empty .last-checked .val')) render();
+}, 30000);
 </script>
 </body>
 </html>
