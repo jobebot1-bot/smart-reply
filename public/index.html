@@ -106,6 +106,132 @@ html,body,#root{
   -webkit-user-select:text;user-select:text}
 .ea:focus{border-color:rgba(245,158,11,0.5);box-shadow:0 0 0 3px rgba(245,158,11,0.08)}
 .rc.sel-edit .ea{display:block}
+.rc[class*="sel-"] .ea.ea-edit-any{display:block}
+
+/* ─── Per-card action row (copy / edit inline) ─── */
+.rc-actions{display:none;gap:8px;margin-top:10px;flex-wrap:wrap}
+.rc[class*="sel-"] .rc-actions{display:flex}
+.rc-act{flex:1;min-width:96px;padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.03);color:#d4d4d8;font-size:12px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.rc-act:active{transform:scale(0.97)}
+.rc-act.copied{border-color:rgba(16,185,129,0.5);color:#34d399;background:rgba(16,185,129,0.08)}
+
+/* ─── Tone selector ─── */
+.tone-row{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;
+  scrollbar-width:none;-ms-overflow-style:none}
+.tone-row::-webkit-scrollbar{display:none}
+.tone-chip{flex-shrink:0;padding:7px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.025);color:rgba(129,140,248,0.55);font-size:12px;font-weight:600;
+  font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tone-chip:active{transform:scale(0.94)}
+.tone-chip.on{background:linear-gradient(135deg,rgba(99,102,241,0.25),rgba(139,92,246,0.2));
+  border-color:rgba(139,92,246,0.45);color:#c4b5fd;box-shadow:0 0 16px rgba(99,102,241,0.12)}
+
+/* ─── Regenerate button ─── */
+.regen-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;
+  margin-bottom:14px;border-radius:12px;border:1px dashed rgba(129,140,248,0.25);
+  background:rgba(255,255,255,0.02);color:rgba(165,180,252,0.8);font-size:13px;font-weight:600;
+  font-family:inherit;cursor:pointer;transition:all .2s}
+.regen-btn:active{transform:scale(0.98)}
+.regen-btn.spin{pointer-events:none;opacity:0.6}
+.regen-btn.spin .regen-ic{animation:regenSpin 0.8s linear infinite}
+@keyframes regenSpin{to{transform:rotate(360deg)}}
+
+/* ─── SMS deep-link button ─── */
+.sms-link{display:none;width:100%;padding:13px;margin-top:10px;border-radius:14px;border:none;
+  font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;
+  text-align:center;color:#86efac;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);
+  transition:all .2s}
+.sms-link:active{transform:scale(0.98)}
+.sms-link.vis{display:block}
+
+/* ─── Header icon buttons ─── */
+.header-actions{display:flex;align-items:center;gap:10px}
+.icon-btn{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.03);color:#c7d2fe;font-size:16px;font-family:inherit;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;position:relative}
+.icon-btn:active{transform:scale(0.94)}
+.icon-btn .dot-badge{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;
+  background:#f87171;box-shadow:0 0 0 2px rgba(5,5,16,0.9)}
+
+/* ─── Thread list drawer ─── */
+.drawer-scrim{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .25s ease}
+.drawer-scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(88vw,340px);z-index:95;
+  background:rgba(10,10,24,0.96);backdrop-filter:blur(32px) saturate(160%);
+  border-right:1px solid rgba(255,255,255,0.06);transform:translateX(-100%);transition:transform .28s ease;
+  display:flex;flex-direction:column;padding:max(env(safe-area-inset-top,16px),16px) 0 16px}
+.drawer.open{transform:translateX(0)}
+.drawer-hd{padding:4px 20px 14px;display:flex;justify-content:space-between;align-items:center}
+.drawer-hd h2{font-size:18px;font-weight:800;color:#e0e7ff}
+.drawer-list{flex:1;overflow-y:auto;padding:0 10px}
+.thread-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;
+  cursor:pointer;transition:all .2s;border:1px solid transparent}
+.thread-row:active{transform:scale(0.98)}
+.thread-row.active{background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.25)}
+.thread-row.sent-ok{opacity:0.55}
+.thread-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.thread-meta{flex:1;min-width:0}
+.thread-name{font-size:14px;font-weight:700;color:#e4e4e7;display:flex;align-items:center;gap:6px}
+.thread-preview{font-size:12px;color:#71717a;margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thread-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px}
+.badge-urgent{background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
+.badge-unread{background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.25)}
+.badge-stale{background:rgba(250,204,21,0.08);color:#facc15;border:1px solid rgba(250,204,21,0.2)}
+.badge-dnr{background:rgba(113,113,122,0.15);color:#a1a1aa;border:1px solid rgba(113,113,122,0.3)}
+
+/* ─── History view ─── */
+.history-toggle{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
+  color:rgba(129,140,248,0.75);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;margin-left:auto}
+.history-toggle:active{opacity:0.6}
+.history-wrap{display:none;margin-bottom:18px;max-height:42vh;overflow-y:auto;
+  border:1px solid rgba(255,255,255,0.04);border-radius:14px;background:rgba(255,255,255,0.015);padding:10px}
+.history-wrap.open{display:block}
+.h-msg{padding:10px 13px;border-radius:14px;margin-bottom:6px;font-size:13px;line-height:1.5;max-width:85%}
+.h-msg .h-author{font-size:10px;font-weight:700;color:rgba(129,140,248,0.55);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.h-them{background:rgba(255,255,255,0.03);color:#d4d4d8;border-radius:14px 14px 14px 4px}
+.h-me{background:linear-gradient(135deg,rgba(59,130,246,0.28),rgba(99,102,241,0.22));
+  color:#f0f5ff;margin-left:auto;border-radius:14px 14px 4px 14px}
+.h-time{font-size:10px;color:#52525b;margin-top:3px}
+
+/* ─── Participants pills (group) ─── */
+.participants{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pp{font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px;
+  background:rgba(255,255,255,0.04);color:#a5b4fc;border:1px solid rgba(255,255,255,0.05)}
+.h-from-tag{font-size:10px;font-weight:700;color:#a5b4fc;margin-right:5px}
+
+/* ─── Freshness pill ─── */
+.fresh{display:inline-flex;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;margin-left:6px;
+  background:rgba(99,102,241,0.08);color:#a5b4fc;border:1px solid rgba(99,102,241,0.15)}
+.fresh.stale{background:rgba(250,204,21,0.08);color:#facc15;border-color:rgba(250,204,21,0.2)}
+
+/* ─── Alias rename modal ─── */
+.modal-scrim{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);
+  display:none;align-items:flex-end;justify-content:center;padding:20px}
+.modal-scrim.open{display:flex;animation:fadeUp .25s ease}
+.modal{width:100%;max-width:420px;background:rgba(12,12,28,0.98);border:1px solid rgba(255,255,255,0.06);
+  border-radius:20px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+.modal h3{font-size:17px;font-weight:800;color:#e0e7ff;margin-bottom:4px}
+.modal p{font-size:13px;color:#71717a;margin-bottom:14px}
+.modal input{width:100%;padding:13px 14px;border-radius:12px;background:rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.08);color:#e4e4e7;font-family:inherit;font-size:15px;outline:none}
+.modal input:focus{border-color:rgba(99,102,241,0.5);box-shadow:0 0 0 3px rgba(99,102,241,0.12)}
+.modal-row{display:flex;gap:10px;margin-top:14px}
+.modal-btn{flex:1;padding:12px;border-radius:12px;border:none;font-family:inherit;font-size:14px;
+  font-weight:700;cursor:pointer;transition:all .2s}
+.modal-btn:active{transform:scale(0.97)}
+.modal-btn.primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
+.modal-btn.secondary{background:rgba(255,255,255,0.04);color:#a1a1aa;border:1px solid rgba(255,255,255,0.06)}
+
+/* Alias-edit nib next to contact name */
+.rename-nib{background:none;border:none;color:rgba(129,140,248,0.45);font-size:12px;
+  cursor:pointer;padding:2px 6px;border-radius:6px;font-family:inherit;transition:all .2s}
+.rename-nib:hover,.rename-nib:active{color:#a5b4fc;background:rgba(255,255,255,0.04)}
 
 /* ─── Buttons ─── */
 .send{display:none;width:100%;padding:17px;margin-top:20px;border:none;border-radius:16px;color:#fff;
@@ -188,11 +314,40 @@ html,body,#root{
 <div class="app">
   <div class="header">
     <div class="header-top">
-      <h1>Smart Reply</h1>
-      <div class="header-sub" id="counter">Inbox clear</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="icon-btn" id="drawer-open" aria-label="Threads" onclick="openDrawer()">&#9776;</button>
+        <h1>Smart Reply</h1>
+      </div>
+      <div class="header-actions">
+        <div class="header-sub" id="counter">Inbox clear</div>
+      </div>
     </div>
     <div class="pbar-track"><div class="pbar-fill" id="pbar" style="width:0%"></div></div>
   </div>
+
+  <!-- Thread drawer -->
+  <div class="drawer-scrim" id="drawer-scrim" onclick="closeDrawer()"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-hd">
+      <h2>Threads</h2>
+      <button class="icon-btn" aria-label="Close" onclick="closeDrawer()">\u2715</button>
+    </div>
+    <div class="drawer-list" id="drawer-list"></div>
+  </aside>
+
+  <!-- Alias / rename modal -->
+  <div class="modal-scrim" id="modal-scrim">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h3 id="modal-title">Rename contact</h3>
+      <p id="modal-sub">Set a friendly name. Stored locally on this device.</p>
+      <input id="modal-input" type="text" autocomplete="off" />
+      <div class="modal-row">
+        <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+        <button class="modal-btn primary" id="modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
   <div class="content" id="content"></div>
   <div class="signature"><div class="sig-line"></div><div class="sig-text">Built for Terelle</div></div>
 </div>
@@ -213,6 +368,163 @@ var CONVERSATIONS = [{"id": 1, "name": "Contact (913)", "initials": "CK", "color
 //   ]}
 
 var cur = 0, sent = {}, total = CONVERSATIONS.length;
+
+// ─── Local storage (namespaced, schema-tolerant) ───
+var LS_KEY = 'sr.v1';
+function loadLS() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveLS(obj) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch(e) {}
+}
+var STORE = loadLS();
+STORE.aliases   = STORE.aliases   || {}; // convId -> friendly name
+STORE.tonePref  = STORE.tonePref  || {}; // convId -> toneId (batch 3)
+STORE.historyOpen = STORE.historyOpen || {}; // convId -> bool
+function persist() { saveLS(STORE); }
+
+function aliasFor(conv) {
+  return STORE.aliases[conv.id] || conv.name;
+}
+
+// ─── Freshness ───
+function parseTime(s) {
+  if (!s) return null;
+  // Accept ISO or human; try Date.parse first.
+  var d = new Date(s);
+  if (!isNaN(d.getTime())) return d;
+  // Try "Apr 2, 2:38 PM" by assuming current year
+  var now = new Date();
+  var tryStr = s.replace(/\u202f|\u00a0/g,' ');
+  d = new Date(tryStr + ' ' + now.getFullYear());
+  return isNaN(d.getTime()) ? null : d;
+}
+function freshnessLabel(s) {
+  var d = parseTime(s);
+  if (!d) return { label: s || '', stale: false };
+  var diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 60)       return { label: 'just now',         stale: false };
+  if (diff < 3600)     return { label: Math.floor(diff/60)+'m ago', stale: false };
+  if (diff < 86400)    return { label: Math.floor(diff/3600)+'h ago', stale: false };
+  var days = Math.floor(diff/86400);
+  return { label: days + 'd ago', stale: days >= 1 };
+}
+
+// ─── Drawer ───
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer').setAttribute('aria-hidden','false');
+  document.getElementById('drawer-scrim').classList.add('open');
+  renderThreadList();
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer').setAttribute('aria-hidden','true');
+  document.getElementById('drawer-scrim').classList.remove('open');
+}
+function renderThreadList() {
+  var host = document.getElementById('drawer-list');
+  var h = '';
+  for (var i = 0; i < CONVERSATIONS.length; i++) {
+    var c = CONVERSATIONS[i];
+    var fresh = freshnessLabel(c.time);
+    var cls = 'thread-row' + (i === cur ? ' active' : '') + (sent[i] ? ' sent-ok' : '');
+    h += '<div class="'+cls+'" onclick="go('+i+');closeDrawer()">' +
+      '<div class="thread-av av-'+(c.color||'blue')+'">'+c.initials+'</div>' +
+      '<div class="thread-meta">' +
+        '<div class="thread-name">' + escapeHtml(aliasFor(c)) +
+          (c.urgent ? ' <span class="thread-badge badge-urgent">urgent</span>' :
+            (!sent[i] ? ' <span class="thread-badge badge-unread">new</span>' : '')) +
+          (fresh.stale ? ' <span class="thread-badge badge-stale">stale</span>' : '') +
+        '</div>' +
+        '<div class="thread-preview">' + escapeHtml(c.message || '') + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+  if (!CONVERSATIONS.length) h = '<div style="padding:20px;color:#71717a;font-size:13px">No conversations.</div>';
+  host.innerHTML = h;
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ─── Alias rename modal ───
+var modalCtx = null;
+function openRenameModal(convId) {
+  modalCtx = { convId: convId };
+  var conv = CONVERSATIONS.find(function(c){ return c.id === convId; });
+  document.getElementById('modal-title').textContent = 'Rename contact';
+  document.getElementById('modal-sub').textContent = 'Set a friendly name. Stored locally on this device.';
+  var inp = document.getElementById('modal-input');
+  inp.value = aliasFor(conv);
+  document.getElementById('modal-scrim').classList.add('open');
+  setTimeout(function(){ inp.focus(); inp.select(); }, 50);
+  document.getElementById('modal-save').onclick = function() {
+    var v = inp.value.trim();
+    if (v) STORE.aliases[convId] = v; else delete STORE.aliases[convId];
+    persist(); closeModal(); render();
+  };
+}
+function closeModal() {
+  document.getElementById('modal-scrim').classList.remove('open');
+  modalCtx = null;
+}
+
+// ─── History toggle ───
+function toggleHistory(ci) {
+  var conv = CONVERSATIONS[ci];
+  STORE.historyOpen[conv.id] = !STORE.historyOpen[conv.id];
+  persist(); render();
+}
+
+// ─── Tones ───
+var TONES = [
+  {id:'casual',       label:'Casual'},
+  {id:'warm',         label:'Warm'},
+  {id:'professional', label:'Professional'},
+  {id:'terse',        label:'Terse'},
+  {id:'flirty',       label:'Flirty'}
+];
+var toneByConv = {}; // ci -> toneId
+
+// Transform a base reply text toward a target tone. Deterministic variants.
+function applyTone(text, toneId, variant) {
+  if (!text) return text;
+  var t = text.trim();
+  variant = variant || 0;
+  var pools = {
+    casual: [
+      function(s){return s;},
+      function(s){return s.replace(/\./g,'').toLowerCase();},
+      function(s){return 'yeah — ' + s.charAt(0).toLowerCase() + s.slice(1);}
+    ],
+    warm: [
+      function(s){return s.replace(/\.$/,'') + ' \u2014 appreciate you.';},
+      function(s){return 'Hey! ' + s;},
+      function(s){return s + ' Hope you\u2019re doing well.';}
+    ],
+    professional: [
+      function(s){return s.charAt(0).toUpperCase() + s.slice(1).replace(/!+/g,'.');},
+      function(s){return 'Thanks for reaching out. ' + s;},
+      function(s){return s.replace(/yeah/ig,'Yes').replace(/bro/ig,'');}
+    ],
+    terse: [
+      function(s){return s.split(/[.!?]/)[0].trim() + '.';},
+      function(s){var w = s.split(/\s+/).slice(0,6).join(' '); return w.replace(/[,.!?]+$/,'') + '.';},
+      function(s){return 'Got it.';}
+    ],
+    flirty: [
+      function(s){return s.replace(/\.$/,'') + ' \u{1F609}';},
+      function(s){return 'hey you \u2014 ' + s.charAt(0).toLowerCase() + s.slice(1);},
+      function(s){return s + ' miss ya.';}
+    ]
+  };
+  var fns = pools[toneId] || pools.casual;
+  return fns[variant % fns.length](t);
+}
 
 // ─── Cosmic Background ───
 function buildCosmos() {
@@ -297,32 +609,88 @@ function renderSent(conv) {
 }
 
 function renderConv(conv, ci) {
+  var activeTone = toneByConv[ci] || 'casual';
+  var fresh = freshnessLabel(conv.time);
+  var displayName = aliasFor(conv);
+  var isGroup = Array.isArray(conv.participants) && conv.participants.length > 1;
+  var historyItems = Array.isArray(conv.history) && conv.history.length
+    ? conv.history
+    : [{ from: conv.name, text: conv.message, time: conv.time, me: false }];
+  var historyOpen = !!STORE.historyOpen[conv.id];
+
   var h = '<div class="card">' +
     '<div class="contact">' +
       '<div class="av av-' + (conv.color||'blue') + '">' + conv.initials + '</div>' +
-      '<div><div class="cname">' + conv.name +
-        (conv.urgent ? ' <span class="urg">Needs reply</span>' : '') +
-      '</div><div class="ctime">' + conv.time + '</div></div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div class="cname">' + escapeHtml(displayName) +
+          (conv.urgent ? ' <span class="urg">Needs reply</span>' : '') +
+          ' <button class="rename-nib" aria-label="Rename" onclick="openRenameModal('+conv.id+')">\u270E</button>' +
+        '</div>' +
+        '<div class="ctime">' + escapeHtml(conv.time || '') +
+          ' <span class="fresh'+(fresh.stale?' stale':'')+'">'+escapeHtml(fresh.label)+'</span>' +
+        '</div>' +
+        (isGroup ? '<div class="participants">' +
+          conv.participants.map(function(p){
+            return '<span class="pp">'+escapeHtml(p.name || p)+'</span>';
+          }).join('') +
+        '</div>' : '') +
+      '</div>' +
+      '<button class="history-toggle" onclick="toggleHistory('+ci+')">' +
+        (historyOpen ? '\u25B2 Hide' : '\u25BC History') +
+      '</button>' +
     '</div>' +
-    '<div class="bubble">' + conv.message + '</div>' +
+    '<div class="history-wrap'+(historyOpen?' open':'')+'" id="hist-'+ci+'">' +
+      historyItems.map(function(m){
+        var who = m.from || (m.me ? 'You' : displayName);
+        var cls = m.me ? 'h-msg h-me' : 'h-msg h-them';
+        return '<div class="'+cls+'">' +
+          (!m.me ? '<div class="h-author">'+escapeHtml(who)+'</div>' : '') +
+          escapeHtml(m.text || '') +
+          (m.time ? '<div class="h-time">'+escapeHtml(m.time)+'</div>' : '') +
+        '</div>';
+      }).join('') +
+    '</div>' +
+    '<div class="bubble">' +
+      (isGroup && conv.fromParticipant ? '<span class="h-from-tag">'+escapeHtml(conv.fromParticipant)+':</span>' : '') +
+      escapeHtml(conv.message) +
+    '</div>' +
+    '<div class="section-lbl">Tone</div>' +
+    '<div class="tone-row" role="tablist">';
+  for (var ti = 0; ti < TONES.length; ti++) {
+    var tn = TONES[ti];
+    h += '<button class="tone-chip'+(tn.id===activeTone?' on':'')+
+      '" onclick="setTone('+ci+',\''+tn.id+'\')">'+tn.label+'</button>';
+  }
+  h += '</div>' +
     '<div class="section-lbl">Choose a reply</div>' +
+    '<button class="regen-btn" id="regen-'+ci+'" onclick="regen('+ci+')">' +
+      '<span class="regen-ic">\u21bb</span> Regenerate suggestions' +
+    '</button>' +
     '<div class="opts">';
 
   for (var r = 0; r < conv.replies.length; r++) {
     var rp = conv.replies[r];
+    var displayText = rp.editable ? '' : applyTone(rp.text, activeTone, (conv._variant||0) + r);
     h += '<div class="rc" data-conv="'+ci+'" data-type="'+rp.type+'" onclick="sel('+ci+',this,\''+rp.type+'\')">' +
       '<div class="rl rl-'+rp.type+'">' + rp.label + '</div>';
     if (rp.editable) {
       h += '<div class="rt" style="color:#71717a">Tap to write your own reply</div>' +
         '<textarea class="ea" onclick="event.stopPropagation()" placeholder="Type your reply...">' + (rp.prefill||'') + '</textarea>';
     } else {
-      h += '<div class="rt">' + rp.text + '</div>';
+      h += '<div class="rt" data-rt>' + displayText + '</div>' +
+        '<textarea class="ea ea-edit-any" onclick="event.stopPropagation()" placeholder="Edit before sending...">' + displayText + '</textarea>';
     }
-    h += '<div class="chk">\u2713</div></div>';
+    h += '<div class="rc-actions">' +
+      '<button class="rc-act" onclick="event.stopPropagation();copyReply(this,'+ci+')">\u2398 Copy</button>' +
+    '</div>' +
+    '<div class="chk">\u2713</div></div>';
   }
 
+  var firstName = conv.name.split(' ')[0];
   h += '</div><button class="send" id="send-'+ci+'" onclick="doSend('+ci+')">Send to ' +
-    conv.name.split(' ')[0] + '</button></div>';
+    firstName + '</button>' +
+    '<a class="sms-link" id="sms-'+ci+'" href="#" onclick="return openSms('+ci+',this)">\u{1F4AC} Open in Messages</a>' +
+    '</div>';
   return h;
 }
 
@@ -370,16 +738,79 @@ function sel(ci, el, type) {
   }
   el.className = 'rc sel-' + type;
   document.getElementById('send-'+ci).classList.add('vis');
+  var smsEl = document.getElementById('sms-'+ci);
+  if (smsEl) smsEl.classList.add('vis');
+  // Focus the inline editor (works for both edit-type and edit-any)
   var ta = el.querySelector('.ea');
-  if (ta) setTimeout(function(){ ta.focus(); }, 50);
+  if (ta && type === 'edit') setTimeout(function(){ ta.focus(); }, 50);
   setTimeout(function(){
     var btn = document.getElementById('send-'+ci);
     if (btn) btn.scrollIntoView({behavior:'smooth',block:'nearest'});
   }, 100);
 }
 
+// Pull the text the user will actually send (edited textarea wins).
+function getSelectedText(ci) {
+  var sel = document.querySelector('.rc[data-conv="'+ci+'"][class*="sel-"]');
+  if (!sel) return '';
+  var ta = sel.querySelector('.ea');
+  if (ta && ta.value != null && ta.value.trim()) return ta.value;
+  var rt = sel.querySelector('[data-rt]');
+  return rt ? rt.textContent : '';
+}
+
+function setTone(ci, toneId) {
+  toneByConv[ci] = toneId;
+  render();
+}
+
+function regen(ci) {
+  var conv = CONVERSATIONS[ci];
+  conv._variant = ((conv._variant || 0) + 1) % 3;
+  var btn = document.getElementById('regen-'+ci);
+  if (btn) btn.classList.add('spin');
+  setTimeout(function(){ render(); }, 350);
+}
+
+function copyReply(btn, ci) {
+  var text = getSelectedText(ci);
+  if (!text) return;
+  var done = function(){
+    btn.classList.add('copied');
+    var orig = btn.innerHTML;
+    btn.innerHTML = '\u2713 Copied';
+    setTimeout(function(){ btn.classList.remove('copied'); btn.innerHTML = orig; }, 1400);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); });
+  } else {
+    fallbackCopy(text); done();
+  }
+}
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+}
+
+function openSms(ci, linkEl) {
+  var conv = CONVERSATIONS[ci];
+  var text = getSelectedText(ci);
+  if (!text) return false;
+  var phone = (conv.phone || '').replace(/[^0-9+]/g,'');
+  var body = encodeURIComponent(text);
+  // iOS uses sms:<num>&body=, Android uses sms:<num>?body=. Use & which both tolerate.
+  var href = 'sms:' + phone + (phone ? '&' : '?') + 'body=' + body;
+  linkEl.setAttribute('href', href);
+  return true; // let the anchor navigate
+}
+
 function doSend(ci) {
   if (sent[ci]) return;
+  // Capture what was actually sent (post-edit) for later batches (audit, style learning).
+  CONVERSATIONS[ci]._sentText = getSelectedText(ci);
   sent[ci] = true;
   render();
   // Auto-advance
