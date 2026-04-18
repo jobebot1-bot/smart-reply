@@ -106,6 +106,45 @@ html,body,#root{
   -webkit-user-select:text;user-select:text}
 .ea:focus{border-color:rgba(245,158,11,0.5);box-shadow:0 0 0 3px rgba(245,158,11,0.08)}
 .rc.sel-edit .ea{display:block}
+.rc[class*="sel-"] .ea.ea-edit-any{display:block}
+
+/* ─── Per-card action row (copy / edit inline) ─── */
+.rc-actions{display:none;gap:8px;margin-top:10px;flex-wrap:wrap}
+.rc[class*="sel-"] .rc-actions{display:flex}
+.rc-act{flex:1;min-width:96px;padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.03);color:#d4d4d8;font-size:12px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.rc-act:active{transform:scale(0.97)}
+.rc-act.copied{border-color:rgba(16,185,129,0.5);color:#34d399;background:rgba(16,185,129,0.08)}
+
+/* ─── Tone selector ─── */
+.tone-row{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:4px;
+  scrollbar-width:none;-ms-overflow-style:none}
+.tone-row::-webkit-scrollbar{display:none}
+.tone-chip{flex-shrink:0;padding:7px 14px;border-radius:100px;border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.025);color:rgba(129,140,248,0.55);font-size:12px;font-weight:600;
+  font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tone-chip:active{transform:scale(0.94)}
+.tone-chip.on{background:linear-gradient(135deg,rgba(99,102,241,0.25),rgba(139,92,246,0.2));
+  border-color:rgba(139,92,246,0.45);color:#c4b5fd;box-shadow:0 0 16px rgba(99,102,241,0.12)}
+
+/* ─── Regenerate button ─── */
+.regen-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;
+  margin-bottom:14px;border-radius:12px;border:1px dashed rgba(129,140,248,0.25);
+  background:rgba(255,255,255,0.02);color:rgba(165,180,252,0.8);font-size:13px;font-weight:600;
+  font-family:inherit;cursor:pointer;transition:all .2s}
+.regen-btn:active{transform:scale(0.98)}
+.regen-btn.spin{pointer-events:none;opacity:0.6}
+.regen-btn.spin .regen-ic{animation:regenSpin 0.8s linear infinite}
+@keyframes regenSpin{to{transform:rotate(360deg)}}
+
+/* ─── SMS deep-link button ─── */
+.sms-link{display:none;width:100%;padding:13px;margin-top:10px;border-radius:14px;border:none;
+  font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;
+  text-align:center;color:#86efac;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);
+  transition:all .2s}
+.sms-link:active{transform:scale(0.98)}
+.sms-link.vis{display:block}
 
 /* ─── Buttons ─── */
 .send{display:none;width:100%;padding:17px;margin-top:20px;border:none;border-radius:16px;color:#fff;
@@ -214,6 +253,52 @@ var CONVERSATIONS = [{"id": 1, "name": "Contact (913)", "initials": "CK", "color
 
 var cur = 0, sent = {}, total = CONVERSATIONS.length;
 
+// ─── Tones ───
+var TONES = [
+  {id:'casual',       label:'Casual'},
+  {id:'warm',         label:'Warm'},
+  {id:'professional', label:'Professional'},
+  {id:'terse',        label:'Terse'},
+  {id:'flirty',       label:'Flirty'}
+];
+var toneByConv = {}; // ci -> toneId
+
+// Transform a base reply text toward a target tone. Deterministic variants.
+function applyTone(text, toneId, variant) {
+  if (!text) return text;
+  var t = text.trim();
+  variant = variant || 0;
+  var pools = {
+    casual: [
+      function(s){return s;},
+      function(s){return s.replace(/\./g,'').toLowerCase();},
+      function(s){return 'yeah — ' + s.charAt(0).toLowerCase() + s.slice(1);}
+    ],
+    warm: [
+      function(s){return s.replace(/\.$/,'') + ' \u2014 appreciate you.';},
+      function(s){return 'Hey! ' + s;},
+      function(s){return s + ' Hope you\u2019re doing well.';}
+    ],
+    professional: [
+      function(s){return s.charAt(0).toUpperCase() + s.slice(1).replace(/!+/g,'.');},
+      function(s){return 'Thanks for reaching out. ' + s;},
+      function(s){return s.replace(/yeah/ig,'Yes').replace(/bro/ig,'');}
+    ],
+    terse: [
+      function(s){return s.split(/[.!?]/)[0].trim() + '.';},
+      function(s){var w = s.split(/\s+/).slice(0,6).join(' '); return w.replace(/[,.!?]+$/,'') + '.';},
+      function(s){return 'Got it.';}
+    ],
+    flirty: [
+      function(s){return s.replace(/\.$/,'') + ' \u{1F609}';},
+      function(s){return 'hey you \u2014 ' + s.charAt(0).toLowerCase() + s.slice(1);},
+      function(s){return s + ' miss ya.';}
+    ]
+  };
+  var fns = pools[toneId] || pools.casual;
+  return fns[variant % fns.length](t);
+}
+
 // ─── Cosmic Background ───
 function buildCosmos() {
   var c = document.getElementById('cosmos');
@@ -297,6 +382,7 @@ function renderSent(conv) {
 }
 
 function renderConv(conv, ci) {
+  var activeTone = toneByConv[ci] || 'casual';
   var h = '<div class="card">' +
     '<div class="contact">' +
       '<div class="av av-' + (conv.color||'blue') + '">' + conv.initials + '</div>' +
@@ -305,24 +391,43 @@ function renderConv(conv, ci) {
       '</div><div class="ctime">' + conv.time + '</div></div>' +
     '</div>' +
     '<div class="bubble">' + conv.message + '</div>' +
+    '<div class="section-lbl">Tone</div>' +
+    '<div class="tone-row" role="tablist">';
+  for (var ti = 0; ti < TONES.length; ti++) {
+    var tn = TONES[ti];
+    h += '<button class="tone-chip'+(tn.id===activeTone?' on':'')+
+      '" onclick="setTone('+ci+',\''+tn.id+'\')">'+tn.label+'</button>';
+  }
+  h += '</div>' +
     '<div class="section-lbl">Choose a reply</div>' +
+    '<button class="regen-btn" id="regen-'+ci+'" onclick="regen('+ci+')">' +
+      '<span class="regen-ic">\u21bb</span> Regenerate suggestions' +
+    '</button>' +
     '<div class="opts">';
 
   for (var r = 0; r < conv.replies.length; r++) {
     var rp = conv.replies[r];
+    var displayText = rp.editable ? '' : applyTone(rp.text, activeTone, (conv._variant||0) + r);
     h += '<div class="rc" data-conv="'+ci+'" data-type="'+rp.type+'" onclick="sel('+ci+',this,\''+rp.type+'\')">' +
       '<div class="rl rl-'+rp.type+'">' + rp.label + '</div>';
     if (rp.editable) {
       h += '<div class="rt" style="color:#71717a">Tap to write your own reply</div>' +
         '<textarea class="ea" onclick="event.stopPropagation()" placeholder="Type your reply...">' + (rp.prefill||'') + '</textarea>';
     } else {
-      h += '<div class="rt">' + rp.text + '</div>';
+      h += '<div class="rt" data-rt>' + displayText + '</div>' +
+        '<textarea class="ea ea-edit-any" onclick="event.stopPropagation()" placeholder="Edit before sending...">' + displayText + '</textarea>';
     }
-    h += '<div class="chk">\u2713</div></div>';
+    h += '<div class="rc-actions">' +
+      '<button class="rc-act" onclick="event.stopPropagation();copyReply(this,'+ci+')">\u2398 Copy</button>' +
+    '</div>' +
+    '<div class="chk">\u2713</div></div>';
   }
 
+  var firstName = conv.name.split(' ')[0];
   h += '</div><button class="send" id="send-'+ci+'" onclick="doSend('+ci+')">Send to ' +
-    conv.name.split(' ')[0] + '</button></div>';
+    firstName + '</button>' +
+    '<a class="sms-link" id="sms-'+ci+'" href="#" onclick="return openSms('+ci+',this)">\u{1F4AC} Open in Messages</a>' +
+    '</div>';
   return h;
 }
 
@@ -370,16 +475,79 @@ function sel(ci, el, type) {
   }
   el.className = 'rc sel-' + type;
   document.getElementById('send-'+ci).classList.add('vis');
+  var smsEl = document.getElementById('sms-'+ci);
+  if (smsEl) smsEl.classList.add('vis');
+  // Focus the inline editor (works for both edit-type and edit-any)
   var ta = el.querySelector('.ea');
-  if (ta) setTimeout(function(){ ta.focus(); }, 50);
+  if (ta && type === 'edit') setTimeout(function(){ ta.focus(); }, 50);
   setTimeout(function(){
     var btn = document.getElementById('send-'+ci);
     if (btn) btn.scrollIntoView({behavior:'smooth',block:'nearest'});
   }, 100);
 }
 
+// Pull the text the user will actually send (edited textarea wins).
+function getSelectedText(ci) {
+  var sel = document.querySelector('.rc[data-conv="'+ci+'"][class*="sel-"]');
+  if (!sel) return '';
+  var ta = sel.querySelector('.ea');
+  if (ta && ta.value != null && ta.value.trim()) return ta.value;
+  var rt = sel.querySelector('[data-rt]');
+  return rt ? rt.textContent : '';
+}
+
+function setTone(ci, toneId) {
+  toneByConv[ci] = toneId;
+  render();
+}
+
+function regen(ci) {
+  var conv = CONVERSATIONS[ci];
+  conv._variant = ((conv._variant || 0) + 1) % 3;
+  var btn = document.getElementById('regen-'+ci);
+  if (btn) btn.classList.add('spin');
+  setTimeout(function(){ render(); }, 350);
+}
+
+function copyReply(btn, ci) {
+  var text = getSelectedText(ci);
+  if (!text) return;
+  var done = function(){
+    btn.classList.add('copied');
+    var orig = btn.innerHTML;
+    btn.innerHTML = '\u2713 Copied';
+    setTimeout(function(){ btn.classList.remove('copied'); btn.innerHTML = orig; }, 1400);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); });
+  } else {
+    fallbackCopy(text); done();
+  }
+}
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+}
+
+function openSms(ci, linkEl) {
+  var conv = CONVERSATIONS[ci];
+  var text = getSelectedText(ci);
+  if (!text) return false;
+  var phone = (conv.phone || '').replace(/[^0-9+]/g,'');
+  var body = encodeURIComponent(text);
+  // iOS uses sms:<num>&body=, Android uses sms:<num>?body=. Use & which both tolerate.
+  var href = 'sms:' + phone + (phone ? '&' : '?') + 'body=' + body;
+  linkEl.setAttribute('href', href);
+  return true; // let the anchor navigate
+}
+
 function doSend(ci) {
   if (sent[ci]) return;
+  // Capture what was actually sent (post-edit) for later batches (audit, style learning).
+  CONVERSATIONS[ci]._sentText = getSelectedText(ci);
   sent[ci] = true;
   render();
   // Auto-advance
